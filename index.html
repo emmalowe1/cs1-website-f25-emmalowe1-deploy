@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Find The Secret Treasure!</title>
+<style>
+  body { background:#ffd6e7; color:#d63384; font-family:Arial; padding:20px; }
+  button { background:#ff4f9a; color:white; border:none; padding:8px 16px;
+           border-radius:20px; margin:5px; cursor:pointer; font-size:16px; }
+  img { max-width:100%; border-radius:12px; margin-top:15px; }
+</style>
+</head>
+<body>
+
+<h1>Find The Secret Treasure!</h1>
+<div id="game"></div>
+
+<script>
+const FIELD  ="https://raw.githubusercontent.com/emmalowe1/finalproject/main/images/field.png";
+const CAVE   ="https://raw.githubusercontent.com/emmalowe1/finalproject/main/images/cavecave.png";
+const WOODS  ="https://raw.githubusercontent.com/emmalowe1/finalproject/main/images/woodswoods.png";
+const WINIMG ="https://raw.githubusercontent.com/emmalowe1/finalproject/main/images/victoryfortheOGs.png";
+
+let state = { name:"", hasKey:false };
+
+function show(text, buttons=[], img=null) {
+    const g=document.getElementById("game");
+    g.innerHTML = `<p>${text}</p>`;
+    buttons.forEach(b => {
+        g.innerHTML += `<button onclick="${b.fn}">${b.txt}</button>`;
+    });
+    if(img){ g.innerHTML += `<br><img src="${img}">`; }
+}
+
+function start() {
+    const g=document.getElementById("game");
+    g.innerHTML = `
+      <p>Welcome to the adventure! What is your name?</p>
+      <input id="name" value="Adventurer">
+      <button onclick="begin()">Begin</button>
+    `;
+}
+
+function begin() {
+    state.name = document.getElementById("name").value || "Adventurer";
+    field();
+}
+
+function field() {
+    show(
+      `You are ${state.name}. You are in a field. You see a cave and woods.`,
+      [
+        {txt:"Cave", fn:"cave()"},
+        {txt:"Woods", fn:"woods()"}
+      ],
+      FIELD
+    );
+}
+
+function cave() {
+    let btns = [{txt:"Leave", fn:"field()"}];
+    let text = "You enter the cave. A locked door needs a key.";
+    if(state.hasKey){
+      btns.unshift({txt:"Unlock door", fn:"win()"});
+    }
+    show(text, btns, CAVE);
+}
+
+function woods() {
+    let text = "You are in the woods.";
+    let btns = [{txt:"Leave", fn:"field()"}];
+    if(!state.hasKey){
+      btns.unshift({txt:"Take key", fn:"takeKey()"});
+      text += " You see a key on the ground.";
+    }
+    show(text, btns, WOODS);
+}
+
+function takeKey() {
+    state.hasKey = true;
+    show("You picked up the key.", [{txt:"Leave", fn:"field()"}], WOODS);
+}
+
+function win() {
+    show(
+      "You unlock the door. You find a treasure chest. You win!",
+      [{txt:"Play again", fn:"start()"}],
+      WINIMG
+    );
+}
+
+start();
+</script>
+
+</body>
+</html>
